@@ -1,0 +1,2088 @@
+/* [project]/styles.css [app-client] (css) */
+:root {
+  --navy-darkest: #081b2b;
+  --navy-dark: #0b2337;
+  --navy-mid: #214162;
+  --blue-light: #cfddff;
+  --blue-pale: #e2f1ff;
+  --blue-soft: #cedcfe;
+  --white: #fff;
+  --bg-primary: #081b2b;
+  --bg-secondary: #0b2337;
+  --bg-card: #21416238;
+  --bg-card-hover: #21416266;
+  --border-subtle: #cfddff1a;
+  --border-accent: #cfddff4d;
+  --text-primary: #fff;
+  --text-secondary: #ffffffad;
+  --text-muted: #ffffff59;
+  --text-accent: #cfddff;
+  --font-display: "Anton", sans-serif;
+  --font-body: "Poppins", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --nav-height: 80px;
+  /* Fluid so wide monitors are not left with a narrow column of content in the
+     middle. Capped rather than uncapped: past roughly this width, body text
+     line lengths get too long to read comfortably. Raise the cap if you want
+     it wider still, it is a single number. */
+  --container-max: clamp(1200px, 90vw, 1680px);
+  /* Section rhythm. Three tiers rather than one value, so the page has a
+     varied vertical pace instead of an identical band between every block.
+     Fluid, so they scale with the viewport rather than snapping at a
+     breakpoint. Assigned by role:
+       --section-pad        default content sections
+       --section-pad-lg     statement sections that need air around them
+       --section-pad-tight  a section that reads as continuing the one above */
+  --section-pad: clamp(64px, 6.5vw, 100px);
+  --section-pad-lg: clamp(88px, 9.5vw, 146px);
+  --section-pad-tight: clamp(44px, 4.5vw, 68px);
+  --radius: 8px;
+  --radius-lg: 0px;
+  --transition: .28s ease;
+}
+
+*, :before, :after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Replaces the one part of Tailwind's preflight this site actually relied on.
+   Left inline, these pick up the line-box descender gap, which made the
+   contact section 7px taller than intended. */
+img, svg, video, canvas {
+  display: block;
+  vertical-align: middle;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+/* Firefox-only scrollbar fallback: flat ice-white thumb on navy. Must be
+   scoped like this because in Chromium, setting scrollbar-color DISABLES
+   all ::-webkit-scrollbar custom styling (the diamond below). */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: rgba(207, 221, 255, .22) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* Chrome / Edge / Safari scrollbar: deliberately quiet. The previous glowing
+   diamond was too loud at 14px; this is a slim, low-contrast thumb that only
+   brightens on hover. */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(207, 221, 255, .16);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(207, 221, 255, .32);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Custom cursor: a dot that always follows the pointer, plus a frame that
+   snaps onto a hovered card. Kept as two elements so the dot stays visible
+   while a card is highlighted. */
+.site-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  pointer-events: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--text-accent);
+  box-shadow: 0 0 10px rgba(207, 221, 255, .55);
+  /* No transform transition: any easing here reads as the cursor lagging
+     behind the pointer. Only the fade is animated. */
+  transition: opacity .2s ease;
+}
+
+/* Sized, positioned and radius-matched to the hovered card from SiteCursor.tsx,
+   so it lands exactly on the card's own border. */
+.site-cursor-frame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  border: 1px solid rgba(207, 221, 255, .6);
+  background: rgba(207, 221, 255, .05);
+  box-shadow: 0 0 24px rgba(207, 221, 255, .14);
+  transition:
+    transform .34s cubic-bezier(.22, 1, .36, 1),
+    width .34s cubic-bezier(.22, 1, .36, 1),
+    height .34s cubic-bezier(.22, 1, .36, 1),
+    border-radius .3s ease,
+    opacity .22s ease;
+}
+
+/* The native cursor is hidden only when the custom one is actually mounted, so
+   touch and reduced-motion users keep a normal pointer. */
+body:has(.site-cursor-dot), body:has(.site-cursor-dot) * {
+  cursor: none !important;
+}
+
+/* Text entry keeps its I-beam. The rule above is deliberately broad, but it was
+   also catching the signup form: typing your name with a 14px dot where the
+   caret indicator belongs reads as a broken field, on the one form the site
+   actually depends on. */
+body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
+  cursor: auto !important;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-label {
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+}
+
+.section-label:after {
+  content: "";
+  background: var(--text-accent);
+  opacity: .45;
+  width: 40px;
+  height: 1px;
+  display: block;
+}
+
+.section-label--center {
+  justify-content: center;
+}
+
+.section-label--center:after {
+  display: none;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.05;
+}
+
+.section-title em {
+  font-family: var(--font-serif);
+  text-transform: none;
+  color: var(--text-accent);
+  font-style: italic;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 48px;
+  font-size: clamp(16px, 1.15vw, 18.5px);
+  line-height: 1.75;
+}
+
+.body-text {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  font-size: clamp(15px, 1.05vw, 17.5px);
+  line-height: 1.8;
+}
+
+.accent {
+  color: var(--blue-light);
+}
+
+.btn {
+  font-family: var(--font-body);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  border: 2px solid #0000;
+  border-radius: 4px;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+}
+
+.btn-primary {
+  background: var(--blue-light);
+  color: var(--navy-darkest);
+  border-color: var(--blue-light);
+}
+
+.btn-primary:hover {
+  background: var(--white);
+  border-color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px #cfddff26;
+}
+
+.btn-ghost {
+  color: var(--text-accent);
+  border-color: var(--border-accent);
+  background: none;
+  padding: 10px 22px;
+  font-size: 11px;
+}
+
+.btn-ghost:hover {
+  background: #cfddff14;
+  transform: translateY(-1px);
+}
+
+.navbar {
+  z-index: 1000;
+  height: var(--nav-height);
+  transition: background var(--transition), box-shadow var(--transition);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.navbar.scrolled {
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--border-subtle);
+  background: #081b2bf5;
+}
+
+.nav-container {
+  height: 100%;
+  max-width: var(--container-max);
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+}
+
+.nav-logo {
+  align-items: center;
+  display: flex;
+}
+
+.nav-logo img {
+  width: auto;
+  height: 34px;
+}
+
+.nav-links {
+  align-items: center;
+  gap: 10px;
+  display: flex;
+}
+
+.nav-link {
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transition: color var(--transition), background var(--transition);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--text-primary);
+  background: #cfddff12;
+}
+
+.nav-toggle {
+  cursor: pointer;
+  background: none;
+  border: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px;
+  display: none;
+}
+
+.nav-toggle span {
+  background: var(--text-primary);
+  width: 22px;
+  height: 1.5px;
+  transition: all var(--transition);
+  transform-origin: center;
+  display: block;
+}
+
+.nav-toggle.open span:first-child {
+  transform: translateY(6.5px)rotate(45deg);
+}
+
+.nav-toggle.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.nav-toggle.open span:nth-child(3) {
+  transform: translateY(-6.5px)rotate(-45deg);
+}
+
+.hero {
+  background: radial-gradient(at 18% 65%, #1e3d5e 0%, #0b2337 42%, #081b2b 75%);
+  align-items: center;
+  height: 100vh;
+  min-height: 560px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-pattern {
+  pointer-events: none;
+  background-image: repeating-linear-gradient(-55deg, #0000, #0000 52px, #cfddff07 52px 53px);
+  position: absolute;
+  inset: 0;
+}
+
+.hero-content {
+  z-index: 2;
+  width: 100%;
+  max-width: var(--container-max);
+  padding: calc(var(--nav-height) + 24px) 24px 0;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-canvas {
+  z-index: 1;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.hero-content, .hero-scroll {
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  letter-spacing: .32em;
+  color: var(--text-accent);
+  text-transform: uppercase;
+  opacity: .75;
+  margin-top: 48px;
+  margin-bottom: 28px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -.01em;
+  flex-direction: column;
+  margin-bottom: 32px;
+  font-size: clamp(80px, min(13vw, 17vh), 150px);
+  /* min() against vh as well as vw: sized from width alone the title stays at
+     its maximum on a wide-but-short viewport (ultrawide, or any window with
+     browser zoom), pushing the tagline and scroll arrow below the fold. */
+  line-height: .93;
+  display: flex;
+}
+
+.hero-title-line {
+  display: block;
+}
+
+.hero-title-line.accent {
+  color: var(--blue-light);
+}
+
+.hero-divider {
+  background: var(--blue-light);
+  opacity: .55;
+  width: 56px;
+  height: 2px;
+  margin-bottom: 24px;
+}
+
+.hero-tagline {
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin-bottom: 44px;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.55;
+}
+
+.hero-scroll {
+  z-index: 2;
+  opacity: .55;
+  justify-content: center;
+  align-items: center;
+  animation: 2s ease-in-out infinite arrowBob;
+  display: flex;
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes arrowBob {
+  0%, 100% {
+    transform: translateX(-50%)translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%)translateY(5px);
+  }
+}
+
+.about-club-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-secondary);
+}
+
+.about-club-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 80px;
+  display: grid;
+}
+
+.about-club-stats {
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  display: grid;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  height: 160px;
+  transition: border-color var(--transition), transform var(--transition);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 20px;
+  display: flex;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+.stat-number {
+  font-family: var(--font-display);
+  color: var(--blue-light);
+  margin-bottom: 8px;
+  font-size: 48px;
+  line-height: 1;
+}
+
+.stat-label {
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.featured-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.05;
+}
+
+.lcg-teaser-section {
+  /* Continues from What We Offer above, then takes full air before Contact. */
+  padding: var(--section-pad-tight) 0 var(--section-pad-lg);
+  background: var(--navy-darkest);
+  position: relative;
+  overflow: hidden;
+}
+
+.lcg-teaser-section:before {
+  content: "";
+  pointer-events: none;
+  background: radial-gradient(at 80%, #2141628c 0%, #0000 70%);
+  width: 55%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.lcg-teaser-grid {
+  z-index: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 80px;
+  display: grid;
+  position: relative;
+}
+
+.lcg-teaser-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  font-size: clamp(44px, 6.5vw, 76px);
+  line-height: .92;
+}
+
+.lcg-teaser-logo {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+/* Logo treatment matches EventCoverGraphic: softened opacity plus a wide
+   blue glow so the mark sits in the section's radial light instead of
+   floating on top of it. */
+/* The six LCG roles read as a list, not a sentence. Scannable beats prose for
+   inherently enumerable content. */
+.lcg-roles {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lcg-roles li {
+  color: var(--text-secondary);
+  font-size: clamp(15px, 1.05vw, 17px);
+  line-height: 1.6;
+  padding-left: 18px;
+  position: relative;
+}
+
+.lcg-roles li:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-accent);
+  opacity: .8;
+}
+
+.lcg-role-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.lcg-logo-border {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ShapeBlur and the mark share this box; the blur sits behind. */
+.lcg-logo-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lcg-logo-blur {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.lcg-logo-stage img {
+  position: relative;
+  z-index: 1;
+}
+
+.lcg-teaser-logo img {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  opacity: .82;
+  filter: drop-shadow(0 0 34px #cfddff29);
+  display: block;
+  transition: transform .4s cubic-bezier(.16, 1, .3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lcg-teaser-logo img {
+    transition: none;
+  }
+}
+
+.offerings-section {
+  /* Opens with air, closes tight: the Pro-Bono card's "see below" points
+     straight into the LCG teaser, so the two read as one pair. */
+  padding: var(--section-pad-lg) 0 var(--section-pad-tight);
+  background: var(--bg-secondary);
+}
+
+.offerings-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  display: grid;
+}
+
+.offering-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  min-height: 300px;
+  transition: border-color var(--transition), transform var(--transition), background var(--transition);
+  flex-direction: column;
+  padding: 36px 26px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.offering-card:after {
+  content: "";
+  background: linear-gradient(90deg, var(--blue-light), transparent);
+  opacity: 0;
+  height: 2px;
+  transition: opacity var(--transition);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+
+
+.offering-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 20px;
+}
+
+.offering-title {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.offering-desc {
+  color: var(--text-secondary);
+  font-size: clamp(14px, .98vw, 15.5px);
+  line-height: 1.72;
+}
+
+.offering-see-below {
+  text-align: center;
+  color: var(--text-accent);
+  letter-spacing: .04em;
+  margin-top: auto;
+  padding-top: 28px;
+  padding-bottom: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sponsors-section {
+  /* A quieter "thank you" band, so it sits closer under Who We Are. */
+  padding: var(--section-pad-tight) 0 var(--section-pad);
+  background: var(--bg-secondary);
+  cursor: default;
+}
+
+.sponsors-grid-wrap {
+  margin-top: 48px;
+}
+
+.sponsors-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  display: grid;
+}
+
+.sponsor-card {
+  /* Same translucent treatment as every other card on the site. The logos are
+     dark marks, so they cannot sit directly on this: .sponsor-logo-ghost
+     renders them as white silhouettes and .sponsor-logo-full cross-fades the
+     real colour in as the cursor approaches (driven from page.tsx). */
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  justify-content: center;
+  align-items: center;
+  height: 160px;
+  padding: 20px;
+  position: relative;
+  transition: background var(--transition), border-color var(--transition),
+              transform .15s, box-shadow .15s;
+  display: flex;
+}
+
+.sponsor-card img {
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  width: auto;
+  /* Absolutely positioned elements resolve max-width against the padding box,
+     so the padding has to be subtracted here or wide logos touch the edges. */
+  max-width: calc(100% - 40px);
+  max-height: 130px;
+  position: absolute;
+  display: block;
+}
+
+/* Resting state: a clean white silhouette of the mark. */
+.sponsor-logo-ghost {
+  filter: brightness(0) invert(1);
+  opacity: .72;
+}
+
+/* Full-colour layer, faded in by proximity. */
+.sponsor-logo-full {
+  opacity: 0;
+}
+
+@media (max-width: 1100px) {
+  .sponsors-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .sponsors-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .sponsors-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.home-contact-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-secondary);
+}
+
+.contact-cards-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  display: grid;
+}
+
+.contact-card {
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition), transform var(--transition);
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  display: flex;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+.contact-card-icon {
+  margin-bottom: 18px;
+}
+
+.contact-card-label {
+  margin-bottom: 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.contact-card-handle {
+  color: var(--text-accent);
+  font-size: clamp(13.5px, .92vw, 15px);
+}
+
+.footer {
+  background: var(--navy-darkest);
+  /* A full-width hairline read as a hard cut. Fading it out at both ends
+     lets the last section settle into the footer instead of stopping dead. */
+  border-top: 0;
+  position: relative;
+  padding: clamp(56px, 6vw, 88px) 0 44px;
+}
+
+.footer:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(207, 221, 255, 0) 0%,
+    rgba(207, 221, 255, .16) 22%,
+    rgba(207, 221, 255, .16) 78%,
+    rgba(207, 221, 255, 0) 100%
+  );
+}
+
+.footer .container {
+  max-width: var(--container-max);
+  padding: 0 24px;
+}
+
+/* Four columns: brand (wider) + Pages + Contact + Follow */
+.footer-grid {
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  display: grid;
+}
+
+.footer-brand {
+  max-width: 320px;
+}
+
+.footer-logo {
+  width: auto;
+  height: 52px;
+}
+
+.footer-tagline {
+  color: var(--text-muted);
+  font-size: clamp(13.5px, .92vw, 15px);
+  line-height: 1.6;
+  margin-top: 16px;
+}
+
+.footer-heading {
+  color: var(--text-accent);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li + li {
+  margin-top: 10px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  font-size: clamp(13.5px, .92vw, 15px);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.footer-links a:hover {
+  color: var(--text-primary);
+}
+
+/* Bottom bar under the columns */
+.footer-bottom {
+  justify-content: space-between;
+  margin-top: 36px;
+  padding-top: 20px;
+  display: flex;
+}
+
+.footer-copy {
+  color: var(--text-muted);
+  font-size: clamp(12.5px, .82vw, 14px);
+}
+
+.footer-address {
+  color: var(--text-muted);
+  text-align: right;
+  font-size: clamp(12.5px, .82vw, 14px);
+}
+
+.page-hero {
+  background: radial-gradient(at 20% 60%, #1e3d5e 0%, #0b2337 45%, #081b2b 80%);
+  align-items: center;
+  height: 100vh;
+  min-height: 560px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero-content {
+  z-index: 2;
+  text-align: left;
+  padding-top: var(--nav-height);
+  width: 100%;
+  position: relative;
+}
+
+.page-hero-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-size: clamp(64px, min(11vw, 15vh), 132px);
+  line-height: .95;
+}
+
+.page-hero-subtitle {
+  color: var(--text-secondary);
+  max-width: 520px;
+  font-size: clamp(15px, 2vw, 18px);
+  line-height: 1.75;
+}
+
+.team-tier-label {
+  font-family: var(--font-display);
+  letter-spacing: .28em;
+  color: var(--text-accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+  padding-bottom: 12px;
+  font-size: 13px;
+  display: flex;
+}
+
+.team-tier-label span {
+  font-family: var(--font-body);
+  color: var(--text-muted);
+  letter-spacing: .05em;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.about-mission-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-secondary);
+}
+
+.about-mission-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 80px;
+  display: grid;
+}
+
+.values-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+  display: grid;
+}
+
+.value-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition);
+  padding: 28px 24px;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+/* Department email link inside Who to Contact cards */
+.value-email {
+  /* Email addresses are single unbreakable tokens ~174px wide and overflow a
+     phone viewport. Allow them to break rather than push the layout out. */
+  overflow-wrap: anywhere;
+  min-width: 0;
+  color: var(--text-accent);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-accent);
+  padding-bottom: 1px;
+  transition: border-color var(--transition);
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.value-email:hover {
+  border-color: var(--text-accent);
+}
+
+.value-icon {
+  color: var(--blue-light);
+  opacity: .85;
+  margin-bottom: 14px;
+  font-size: 22px;
+  display: block;
+}
+
+.value-title {
+  color: var(--text-accent);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.value-desc {
+  color: var(--text-secondary);
+  font-size: clamp(14px, .98vw, 15.5px);
+  line-height: 1.7;
+}
+
+.about-story-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-primary);
+}
+
+.lcg-award-banner {
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #f5c842;
+  background: #f5c84212;
+  border-top: 1px solid #f5c84233;
+  border-bottom: 1px solid #f5c84233;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+}
+
+.lcg-award-banner i {
+  font-size: 13px;
+}
+
+.lcg-page-hero {
+  background: radial-gradient(at 15% 55%, #214162 0%, #0b2337 38%, #081b2b 70%);
+  align-items: center;
+  height: 100vh;
+  min-height: 560px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.lcg-page-hero-inner {
+  z-index: 2;
+  padding-top: var(--nav-height);
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 60px;
+  width: 100%;
+  display: grid;
+  position: relative;
+}
+
+.lcg-page-hero-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-size: clamp(64px, min(11vw, 15vh), 132px);
+  line-height: .95;
+}
+
+.lcg-hype-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-secondary);
+}
+
+.lcg-hype-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 160px;
+  display: grid;
+}
+
+.lcg-hype-quote {
+  font-family: var(--font-serif);
+  color: var(--text-accent);
+  border-left: 3px solid var(--blue-light);
+  margin-top: 32px;
+  padding-left: 24px;
+  font-size: clamp(21.5px, 2.5vw, 31.5px);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.lcg-how-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-primary);
+}
+
+.lcg-steps {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 48px;
+  display: grid;
+}
+
+.lcg-step {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition);
+  padding: 36px 28px;
+  position: relative;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+.lcg-step-num {
+  font-family: var(--font-display);
+  color: var(--blue-light);
+  opacity: .12;
+  margin-bottom: 20px;
+  font-size: 64px;
+  line-height: 1;
+}
+
+.lcg-step-title {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.lcg-step-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.lcg-step:not(:last-child):after {
+  content: "→";
+  color: var(--text-accent);
+  opacity: .35;
+  z-index: 1;
+  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+}
+
+.lcg-why-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-secondary);
+}
+
+.lcg-why-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 48px;
+  display: grid;
+}
+
+.lcg-why-card {
+  perspective: 1000px;
+  cursor: default;
+  height: 240px;
+}
+
+.lcg-why-card-inner {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .65s cubic-bezier(.4, .2, .2, 1);
+  position: relative;
+}
+
+.lcg-why-card:hover .lcg-why-card-inner {
+  transform: rotateY(180deg);
+}
+
+.lcg-why-card-front, .lcg-why-card-back {
+  backface-visibility: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 28px;
+  transition: border-color .28s;
+  display: flex;
+  position: absolute;
+  inset: 0;
+}
+
+.lcg-why-card:hover .lcg-why-card-front, .lcg-why-card:hover .lcg-why-card-back {
+  border-color: var(--border-accent);
+}
+
+.lcg-why-card-back {
+  transform: rotateY(180deg);
+}
+
+.lcg-why-icon {
+  color: var(--blue-light);
+  opacity: .9;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 40px;
+  display: block;
+}
+
+.lcg-why-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.lcg-why-desc {
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.lcg-why-back-title {
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lcg-tiles-section {
+  /* Was the largest dead gap on the LCG page, above and below the tiles. */
+  padding: var(--section-pad-tight) 0;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lcg-tiles-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 40px;
+  display: grid;
+}
+
+.lcg-tile {
+  min-width: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--text-secondary);
+  letter-spacing: .04em;
+  transition: border-color var(--transition), color var(--transition);
+  cursor: default;
+  padding: 20px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.lcg-tile:hover {
+  border-color: var(--border-accent);
+  color: var(--text-primary);
+}
+
+.lcg-tab-row {
+  gap: 10px;
+  margin: 36px 0 28px;
+  display: flex;
+}
+
+.lcg-tab {
+  font-family: var(--font-body);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  background: none;
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: color .2s, background .2s, border-color .2s;
+}
+
+.lcg-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+}
+
+.lcg-tab--active {
+  background: var(--blue-light);
+  color: var(--navy-darkest);
+  border-color: var(--blue-light);
+}
+
+@keyframes lcgTileIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lcg-tiles-animate .lcg-tile {
+  opacity: 0;
+  animation: .32s forwards lcgTileIn;
+}
+
+.lcg-clients-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  display: grid;
+}
+
+.lcg-client-cta-section {
+  padding: 48px 32px;
+  background: var(--bg-primary);
+}
+
+.lcg-client-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: var(--blue-light);
+  color: var(--navy-darkest);
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2vw, 22px);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 24px 52px;
+  /* Squared to match the cards, which are all square now. A lone 999px pill
+     was the only rounded surface left on the page. */
+  border-radius: 0;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition);
+  box-shadow: 0 4px 24px #cfddff26;
+}
+
+/* Light sweep that crosses the bar on hover. */
+.lcg-client-cta-btn:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    rgba(255,255,255,0) 35%,
+    rgba(255,255,255,.75) 50%,
+    rgba(255,255,255,0) 65%
+  );
+  transform: translateX(-100%);
+  transition: transform .7s cubic-bezier(.16, 1, .3, 1);
+}
+
+.lcg-client-cta-btn:hover:before {
+  transform: translateX(100%);
+}
+
+.lcg-client-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px #cfddff40;
+}
+
+/* The chevrons slide apart, opening toward the destination. */
+.lcg-client-cta-btn svg {
+  transition: transform var(--transition);
+}
+
+.lcg-client-cta-btn:hover svg:first-of-type  { transform: translateX(-6px); }
+.lcg-client-cta-btn:hover svg:last-of-type   { transform: translateX(6px); }
+
+.lcg-client-cta-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lcg-client-cta-btn:before,
+  .lcg-client-cta-btn svg { transition: none; }
+  .lcg-client-cta-btn:hover:before { transform: translateX(-100%); }
+}
+
+.lcg-cta-section {
+  /* Closing statement on the page, so it gets the widest air. */
+  padding: var(--section-pad-lg) 0;
+  text-align: center;
+  background: radial-gradient(at 50% 100%, #214162 0%, #081b2b 60%);
+}
+
+.lcg-cta-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-size: clamp(40px, 6vw, 72px);
+}
+
+.lcg-cta-sub {
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.lcg-cta-buttons {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  display: flex;
+}
+
+.contact-page-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-secondary);
+}
+
+.contact-page-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 80px;
+  display: grid;
+}
+
+.contact-list {
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 40px;
+  display: flex;
+}
+
+.contact-item {
+  min-width: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition), transform var(--transition);
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  display: flex;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+.contact-item-icon {
+  flex-shrink: 0;
+}
+
+.contact-item-label {
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.contact-item-value {
+  color: var(--text-accent);
+  font-size: clamp(15px, 1vw, 16.5px);
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .offerings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sponsors-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lcg-tiles-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lcg-clients-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  /* The section-pad tiers are clamp()-based, so they already scale down on
+     small screens. No fixed mobile override needed. */
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    top: var(--nav-height);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-subtle);
+    z-index: 999;
+    background: #081b2bfa;
+    flex-direction: column;
+    gap: 0;
+    padding: 12px 0;
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-link {
+    border-left: 3px solid #0000;
+    border-radius: 0;
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 12px;
+    display: block;
+    background: none !important;
+  }
+
+  .nav-link:hover {
+    border-left-color: #cfddff4d;
+  }
+
+  .nav-link.active {
+    border-left-color: var(--blue-light);
+    color: var(--text-primary);
+  }
+
+  .featured-body, .lcg-teaser-grid, .about-mission-grid, .lcg-page-hero-inner, .lcg-hype-grid, .about-club-grid, .contact-page-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  .lcg-page-hero-logo, .lcg-teaser-logo {
+    order: -1;
+  }
+
+  .about-club-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lcg-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lcg-step:after {
+    display: none;
+  }
+
+  .lcg-why-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lcg-tiles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lcg-clients-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .contact-cards-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer .container {
+    padding: 0 24px;
+  }
+
+  /* Mobile: brand on top, then link columns two-up, bottom bar stacked */
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .footer-address {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 58px;
+  }
+
+  .btn {
+    justify-content: center;
+  }
+
+  .lcg-cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about-club-stats, .lcg-tiles-grid, .lcg-clients-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.events-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-primary);
+}
+
+.event-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  transition: border-color var(--transition);
+  margin-bottom: 56px;
+  overflow: hidden;
+}
+
+/* Hover handled by the custom cursor frame (SiteCursor.tsx); a second
+   built-in effect here fought with it. */
+
+.event-card:last-child {
+  margin-bottom: 0;
+}
+
+.event-card-inner {
+  grid-template-columns: 440px 1fr;
+  height: 460px;
+  display: grid;
+}
+
+.event-card-inner--flip {
+  direction: rtl;
+}
+
+.event-card-inner--flip > * {
+  direction: ltr;
+}
+
+.event-card-image {
+  overflow: hidden;
+  /* next/image `fill` positions absolutely against the nearest positioned
+     ancestor, so this container has to establish one. */
+  position: relative;
+}
+
+.event-card-image img {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.event-card-body {
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 36px 44px;
+  display: flex;
+  overflow: hidden;
+}
+
+.event-card-content {
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.event-card-inner:not(.event-card-inner--flip) .btn-sm {
+  align-self: flex-end;
+}
+
+.event-card-inner--flip .btn-sm {
+  align-self: flex-start;
+}
+
+.event-card-top {
+  flex-direction: column;
+  gap: 10px;
+  display: flex;
+}
+
+.btn-sm {
+  align-self: flex-start;
+  padding: 10px 20px;
+  font-size: 12px;
+}
+
+.event-tags {
+  flex-wrap: wrap;
+  gap: 8px;
+  display: flex;
+}
+
+.event-tag {
+  letter-spacing: .06em;
+  color: var(--text-accent);
+  border: 1px solid var(--border-accent);
+  white-space: nowrap;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.event-award {
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #f5c842;
+  background: #f5c84214;
+  border: 1px solid #f5c8424d;
+  border-radius: 6px;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+}
+
+.event-award i {
+  font-size: 10px;
+}
+
+.event-detail-row {
+  flex-direction: column;
+  gap: 2px;
+  display: flex;
+}
+
+.event-detail-label {
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.event-detail-value {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.event-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1.1;
+}
+
+.event-meta {
+  flex-wrap: wrap;
+  gap: 16px;
+  display: flex;
+}
+
+.event-meta-item {
+  color: var(--text-secondary);
+  letter-spacing: .04em;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+}
+
+.event-meta-item i {
+  color: var(--text-accent);
+  font-size: 11px;
+}
+
+.event-desc {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: clamp(14.5px, 1vw, 16px);
+  line-height: 1.75;
+}
+
+@media (max-width: 768px) {
+  .event-card-inner, .event-card-inner--flip {
+    direction: ltr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .event-card-body {
+    padding: 28px 24px;
+  }
+}
+
+.modal-overlay {
+  z-index: 9999;
+  -webkit-backdrop-filter: blur(14px);
+  background: #081b2bcc;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  transition: opacity .38s;
+  display: flex;
+  position: fixed;
+  inset: 0;
+}
+
+.modal-overlay.modal-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 500px;
+  padding: 52px 44px 40px;
+  animation: .5s cubic-bezier(.22, 1, .36, 1) both modalCardIn;
+  position: relative;
+}
+
+.modal-overlay.modal-closing .modal-card {
+  transition: transform .38s;
+  transform: translateY(16px);
+}
+
+@keyframes modalCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-eyebrow {
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+}
+
+.modal-eyebrow:after {
+  content: "";
+  background: var(--text-accent);
+  opacity: .45;
+  width: 32px;
+  height: 1px;
+  display: block;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1.05;
+}
+
+.modal-desc {
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.modal-form {
+  flex-direction: column;
+  gap: 12px;
+  display: flex;
+}
+
+.modal-input {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  width: 100%;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  transition: border-color var(--transition), background var(--transition);
+  background: #cfddff0f;
+  outline: none;
+  padding: 14px 16px;
+  font-size: 14px;
+}
+
+.modal-input::placeholder {
+  color: var(--text-muted);
+}
+
+.modal-input:focus {
+  border-color: var(--border-accent);
+  background: #cfddff1a;
+}
+
+.modal-input.input-error {
+  border-color: #e05c5c;
+}
+
+/* Honeypot field. Moved off-screen instead of display:none or
+   visibility:hidden, both of which bots commonly skip. Sighted users never see
+   it, keyboard users skip it via tabindex="-1", and screen readers ignore it
+   via aria-hidden. */
+.modal-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-error {
+  color: #e07c7c;
+  min-height: 16px;
+  margin-top: -4px;
+  font-size: 12px;
+}
+
+.modal-submit-btn {
+  letter-spacing: .04em;
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-success {
+  color: var(--text-accent);
+  text-align: center;
+  padding: 20px 0 8px;
+  font-size: 15px;
+  line-height: 1.6;
+  display: none;
+}
+
+.modal-skip {
+  width: 100%;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  text-align: center;
+  cursor: pointer;
+  transition: color var(--transition);
+  letter-spacing: .02em;
+  background: none;
+  border: none;
+  margin-top: 20px;
+  padding: 0;
+  font-size: 12px;
+  display: block;
+}
+
+.modal-skip:hover {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .modal-card {
+    padding: 40px 24px 32px;
+  }
+
+  .modal-title {
+    font-size: 36px;
+  }
+}
+

@@ -1,0 +1,31 @@
+node_modules/
+.next/
+
+# Build artifacts
+tsconfig.tsbuildinfo
+.vercel/
+
+# Secrets. None are committed today; this is here so that stays true.
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Local-only material. These stay on disk, they are just not part of the repo,
+# because nothing on the site references them.
+# ---------------------------------------------------------------------------
+
+# ~58MB of original event photography. The site serves its own resized copies
+# from public/ (event-*.jpg), so the originals are archive material.
+Photos/
+
+# ~11.5MB of competitor homepage screenshots collected as design reference
+# while building. Research, never served.
+public/LCC Brand Kit/Consulting Website Examples/
+
+# Screenshots and logs from local browser automation
+.playwright-mcp/
+
+# Local agent tooling. Useful on this machine, meaningless to whoever maintains
+# the site next, and the skills carry their own licence terms. Stays on disk.
+.claude/
