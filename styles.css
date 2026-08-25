@@ -2232,6 +2232,17 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
     max-width: calc(100% - 16px);
   }
 
+  /* McKinsey and Bain are the only near-square marks in the set (3:2 and 1:1).
+     A height cap tuned for the wide wordmarks leaves them roughly a third of
+     the width of an Accenture or a Mercer, so they read as undersized against
+     the card. They get their own cap; the card's content box is 68px tall, so
+     56px still clears the padding. Order-dependent, same as the Mercer rule
+     above: 1 = McKinsey, 2 = Bain in the sponsors array in page.tsx. */
+  .sponsor-card:nth-child(1) img,
+  .sponsor-card:nth-child(2) img {
+    max-height: 56px;
+  }
+
   /* --- LCG award banner ---------------------------------------------------
      Trophy and copy are one flex row. Once the copy wraps to three lines the
      icon centres against the whole block while the text reads as hanging left.
