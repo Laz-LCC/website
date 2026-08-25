@@ -2226,21 +2226,16 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
     padding: 12px;
   }
 
+  /* One cap for the whole set. Now that the logos are cropped to their marks,
+     height and visible size are the same thing, so this can be raised without
+     the wide wordmarks blowing out: they hit max-width first and settle around
+     24-36px on their own. Only the squarer marks (EY, Mastercard, Bain) are
+     tall enough for the cap to bind, which is exactly where the extra size was
+     wanted. The card's content box is 68px, so 52px keeps the padding intact. */
   .sponsor-card img {
     height: auto !important;
-    max-height: 38px;
+    max-height: 52px;
     max-width: calc(100% - 16px);
-  }
-
-  /* McKinsey and Bain are the only near-square marks in the set (3:2 and 1:1).
-     A height cap tuned for the wide wordmarks leaves them roughly a third of
-     the width of an Accenture or a Mercer, so they read as undersized against
-     the card. They get their own cap; the card's content box is 68px tall, so
-     56px still clears the padding. Order-dependent, same as the Mercer rule
-     above: 1 = McKinsey, 2 = Bain in the sponsors array in page.tsx. */
-  .sponsor-card:nth-child(1) img,
-  .sponsor-card:nth-child(2) img {
-    max-height: 56px;
   }
 
   /* --- LCG award banner ---------------------------------------------------
