@@ -568,7 +568,7 @@ export default function Home() {
           </h1>
           <div className="hero-divider"></div>
           <p className="hero-tagline">
-            Developing the next generation of business leaders.
+            Your consulting journey starts here.
           </p>
         </div>
         <div className="hero-scroll">
