@@ -152,7 +152,10 @@ export default function Events() {
 
           {/* ---- Event 4: Diversity in Consulting Speaker Panel ---- */}
           <div className="event-card">
-            <div className="event-card-inner event-card-inner--flip" style={{ height: '460px' }}>
+            {/* The inline height:460px that used to be here duplicated the
+                value already in .event-card-inner, and being inline it survived
+                the mobile media query that has to clear it. */}
+            <div className="event-card-inner event-card-inner--flip">
               <div className="event-card-image">
                 <Image
                   src="/event-diversity-panel.png"

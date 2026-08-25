@@ -35,7 +35,11 @@ export default function EventCoverGraphic({
             position: 'relative',
             zIndex: 1,
             width: '100%',
-            maxWidth: '200px',
+            /* Proportional rather than a flat 200px. Once the event card stacks
+               below 900px the cover is the full card width, and a fixed 200px
+               mark sat marooned in the middle of it. The cap keeps it from
+               growing past its intended size on a wide desktop card. */
+            maxWidth: 'min(300px, 52%)',
             height: 'auto',
             opacity: 0.85,
             filter: 'drop-shadow(0 0 40px rgba(207,221,255,0.18))',

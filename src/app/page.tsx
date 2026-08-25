@@ -168,9 +168,20 @@ export default function Home() {
 
     function resize() {
       if (!canvas) return
-      W = canvas.width  = canvas.offsetWidth
+      const w = canvas.offsetWidth
+      const widthChanged = w !== W
+
+      W = canvas.width  = w
       H = canvas.height = canvas.offsetHeight
-      particles = Array.from({ length: COUNT }, makeParticle)
+
+      // Only a real width change re-seeds the field. Mobile browsers fire
+      // `resize` every time the URL bar slides away during a scroll, which
+      // changes the height and nothing else. Re-seeding there threw away every
+      // particle mid-scroll and dropped in a fresh set, which is what made the
+      // background look like it was glitching or racing on a phone.
+      if (widthChanged || particles.length === 0) {
+        particles = Array.from({ length: COUNT }, makeParticle)
+      }
     }
 
     function draw() {
@@ -224,6 +235,11 @@ export default function Home() {
   useEffect(() => {
     const wrap  = sponsorGridWrap.current
     if (!wrap) return
+
+    // On a touch screen this effect has no input and would sit writing inline
+    // opacity 0 onto every logo forever, which would also beat the .touch-active
+    // CSS rules on specificity. TouchSpotlight drives the reveal there instead.
+    if (!window.matchMedia('(pointer: fine)').matches) return
 
     const RADIUS = 480
     let lastX = -9999

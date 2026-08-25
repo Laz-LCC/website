@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import SiteCursor from '@/components/SiteCursor'
+import TouchSpotlight from '@/components/TouchSpotlight'
 
 const SITE_DESCRIPTION =
   'Laurier Consulting Club runs networking mixers, workshops, and case competitions ' +
@@ -65,6 +66,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Custom cursor, mounted site-wide. Self-disables on touch devices
             and for reduced-motion users. */}
         <SiteCursor />
+        {/* The other half of the pair: on touch screens, where SiteCursor
+            disables itself, this drives the same reveals from scroll position. */}
+        <TouchSpotlight />
         {children}
       </body>
     </html>

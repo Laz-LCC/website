@@ -35,9 +35,21 @@ export default function HeroBackground() {
 
     function resize() {
       if (!canvas) return
-      W = canvas.width  = canvas.offsetWidth
+      const w = canvas.offsetWidth
+      const widthChanged = w !== W
+
+      W = canvas.width  = w
       H = canvas.height = canvas.offsetHeight
-      particles = Array.from({ length: COUNT }, makeParticle)
+
+      // Only a real width change re-seeds the field. Mobile browsers fire
+      // `resize` every time the URL bar slides away during a scroll, which
+      // changes the height and nothing else. Re-seeding there threw away every
+      // particle mid-scroll and dropped in a fresh set, which is what made the
+      // background look like it was glitching or racing on a phone.
+      // Kept identical to the copy in src/app/page.tsx.
+      if (widthChanged || particles.length === 0) {
+        particles = Array.from({ length: COUNT }, makeParticle)
+      }
     }
 
     function draw() {
