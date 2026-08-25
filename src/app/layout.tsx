@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import SiteCursor from '@/components/SiteCursor'
 import TouchSpotlight from '@/components/TouchSpotlight'
+import { Analytics } from '@vercel/analytics/next'
 
 const SITE_DESCRIPTION =
   'Laurier Consulting Club runs networking mixers, workshops, and case competitions ' +
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             disables itself, this drives the same reveals from scroll position. */}
         <TouchSpotlight />
         {children}
+        <Analytics />
       </body>
     </html>
   )
