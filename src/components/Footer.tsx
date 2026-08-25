@@ -15,7 +15,7 @@ export default function Footer() {
               className="footer-logo"
             />
             <p className="footer-tagline">
-              Developing the next generation of business leaders at Wilfrid Laurier University.
+              Your consulting journey starts here.
             </p>
           </div>
 
