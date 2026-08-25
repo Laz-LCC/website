@@ -639,12 +639,17 @@ export default function Home() {
           <div className="sponsors-grid-wrap" ref={sponsorGridWrap}>
             <div className="sponsors-grid">
             {[
-              { src: '/Event Sponsorships/mckinsey.png',         alt: 'McKinsey & Company', h: '128px' },
-              { src: '/Event Sponsorships/bain.png',             alt: 'Bain & Company',     h: '128px' },
+              /* McKinsey, Bain and IBM were cropped to their marks (they shipped with
+                 28-61% of the canvas as empty padding, which capped how large the
+                 visible logo could ever render). Their heights are correspondingly
+                 smaller now and describe the mark itself, not a mark plus margin.
+                 The rendered size on this desktop wall is unchanged. */
+              { src: '/Event Sponsorships/mckinsey.png',         alt: 'McKinsey & Company', h: '46px'  },
+              { src: '/Event Sponsorships/bain.png',             alt: 'Bain & Company',     h: '68px'  },
               { src: '/Event Sponsorships/bcg.png',              alt: 'BCG',                h: '68px'  },
               { src: '/Event Sponsorships/monitor deloitte.png', alt: 'Monitor Deloitte',   h: '68px'  },
               { src: '/Event Sponsorships/ey.png',               alt: 'EY',                 h: '100px' },
-              { src: '/Event Sponsorships/ibm.png',              alt: 'IBM',                h: '98px'  },
+              { src: '/Event Sponsorships/ibm.png',              alt: 'IBM',                h: '59px'  },
               { src: '/Event Sponsorships/kpmg.png',             alt: 'KPMG',               h: '76px'  },
               { src: '/Event Sponsorships/mastercard.png',       alt: 'Mastercard',         h: '104px' },
               { src: '/Event Sponsorships/accenture.png',        alt: 'Accenture',          h: '65px'  },
