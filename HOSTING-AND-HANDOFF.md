@@ -1,17 +1,60 @@
-# LCC Website — Hosting Costs & Handoff Plan
+# LCC Website — Hosting, Accounts & Handoff Plan
 
-> Saved from a Claude Code session on 2026-07-08. Reference for when it's time to
-> host the site, budget for it, and eventually hand it off to the next exec team.
+> Originally written 2026-07-08 as a plan for going live. Updated 2026-08-25, the
+> day the site actually launched. The plan sections have been rewritten to
+> describe what is now true rather than what was intended.
 
 ---
 
-## TL;DR
+## Current state (2026-08-25)
 
-- **Hosting this site can cost $0/month.** The Google side is entirely free, and
-  the site as built fits Vercel's free tier.
-- The only near-mandatory cost is a **custom domain (~$15–20 CAD/year)**.
-- For handoff: the key is moving everything onto **club-owned accounts**
-  (GitHub, Vercel, Google, domain registrar), not personal ones.
+**The site is live at https://laurierconsultingclub.ca.**
+
+| Thing | Where it lives | Status |
+|---|---|---|
+| Code | `github.com/Laz-LCC/website`, branch `main` | Club-owned, public |
+| Hosting | Vercel team `lcc9`, project `website`, Hobby plan | Club-owned |
+| Domain | `laurierconsultingclub.ca` | Bought personally, see below |
+| DNS | Nameservers at `ns0/ns1.wixdns.net` | **Not club-controlled** |
+| Mailing list | Google Sheet + Apps Script | Personal Google account |
+
+Deploys are automatic: any commit pushed to `main` on GitHub rebuilds and ships
+to the live domain within about a minute. Nobody needs a terminal to edit the
+site, and nobody needs to remember a deploy command.
+
+`www.laurierconsultingclub.ca` permanently redirects (308) to the apex, which is
+the canonical address.
+
+---
+
+## The four accounts
+
+The original version of this document said the risk was the code living on one
+laptop. That is solved. The remaining risk is **accounts**, and there are four,
+not three. Losing any one of them breaks something different:
+
+1. **GitHub** (`Laz-LCC`) — club-owned. Losing it means losing the ability to
+   change the site.
+2. **Vercel** (team `lcc9`) — club-owned. Losing it means the site stays up but
+   cannot be redeployed or reconfigured.
+3. **Google** — the mailing-list Sheet and its Apps Script. Still on a personal
+   account. Losing it means signups silently stop being recorded, while the form
+   continues to tell people they subscribed.
+4. **DNS** — currently at Wix, under whoever bought the domain. Losing it means
+   the domain stops pointing at the site, and no amount of GitHub or Vercel
+   access can fix that.
+
+Number 4 is the one that gets forgotten, because it is invisible while it works.
+
+---
+
+## TL;DR on cost
+
+- **Hosting costs $0/month.** The Google side is free, and the site fits
+  Vercel's free tier.
+- The only real cost is the **domain, ~$15–20 CAD/year**, and it renews
+  annually. A lapsed renewal takes the site offline even though nothing about
+  the site itself has changed.
 
 ---
 
@@ -85,41 +128,33 @@ The handoff is less about the code and more about the **accounts** everything
 hangs off. There are four things to transfer, and the golden rule for each is:
 put it under a club-owned identity, not a personal one.
 
-## 1. The code → a GitHub repository under a club account
+## 1. The code → GitHub — DONE
 
-Right now the code only exists on one laptop, which is the riskiest part of the
-whole setup — if the laptop dies, the website source is gone. The fix:
+Lives at `github.com/Laz-LCC/website` under the club org. The laptop is no
+longer a single point of failure. Any future exec can clone it, and any future
+Claude Code user can open it and pick up where things left off — `CLAUDE.md` is
+the briefing document for exactly that (brand colours, page structure,
+conventions, and a section on the decisions that look like bugs but are not).
 
-- Create a club GitHub account (or organization) with a shared club email like
-  `laurierconsulting@gmail.com`
-- Push the project there as a repository
+## 2. Vercel → connected — DONE
 
-That makes the repo the permanent home of the code. Any future exec can
-download it, and any future Claude Code user can open it and pick up right
-where things left off — the `CLAUDE.md` file is already a solid briefing
-document for exactly that (it explains the brand colours, page structure,
-conventions, and even the Google Sheets wiring).
+Vercel team `lcc9`, project `website`, connected to the club GitHub repo. A push
+to `main` redeploys automatically, so no terminal is needed to publish a change.
 
-## Before the first deploy: set `NEXT_PUBLIC_SITE_URL`
+Two settings on that project are load-bearing and worth knowing, because both
+produce a site that looks broken with no error anywhere:
 
-One env var needs setting in the Vercel project, or link previews break in a way
-nothing on the site itself will show you.
-
-`src/app/layout.tsx` builds the absolute URLs for social preview cards (the image
-and title that appear when someone pastes the link into Instagram DMs, LinkedIn,
-or a group chat). It reads `NEXT_PUBLIC_SITE_URL`, falls back to the Vercel
-deployment URL, and finally to `http://localhost:3000`.
-
-So: the site works fine without it, but until it is set to the real domain, a
-shared link may render its preview against the `*.vercel.app` address instead of
-the club domain. Set it once the domain is registered.
-
-## 2. Vercel → connect it to that GitHub repo
-
-Deploy on Vercel via a club-owned Vercel account (sign up with the same club
-email), connected to the club GitHub repo, so hosting is fully decoupled from
-any one person. Bonus: with that connection, anyone who edits the code on
-GitHub gets the site redeployed automatically — no terminal needed.
+- **Framework Preset must be `Next.js`.** It was `Other` at launch, because the
+  project was created when the repo held only a placeholder `index.html`. With
+  `Other`, Vercel's output directory rule is "`public` if it exists" — and this
+  repo has a `public/` folder — so it ran the build, threw the result away, and
+  served the images folder as the website. Every page 404'd while the deployment
+  reported Ready.
+- **`NEXT_PUBLIC_SITE_URL` must be set** to `https://laurierconsultingclub.ca`.
+  `src/app/layout.tsx` builds absolute URLs for social preview cards from it. If
+  it is missing the site still works, but links pasted into Instagram or LinkedIn
+  preview against the raw `.vercel.app` address. Set it as type **Config**, not
+  Secret — it ships in the browser bundle by design.
 
 ## 3. Google side → redeploy Apps Script from a club Google account
 
@@ -135,11 +170,35 @@ working (the site would look fine — data would just vanish). Handoff:
 It's about a 15-minute job, and future Google Forms should be created from
 that account too.
 
-## 4. Domain → register it with club credentials
+## 4. Domain and DNS → still personal — NOT DONE
 
-Register the domain using the club email and share the registrar login. An
-expired domain in a graduated student's personal account is the single most
-common way club websites die.
+`laurierconsultingclub.ca` is registered personally, not by the club, and its
+nameservers point at Wix (`ns0.wixdns.net`, `ns1.wixdns.net`) rather than at the
+registrar or Vercel. So there are two separate things to move, and they are
+often confused:
+
+- **The registration** — who pays the annual renewal and can transfer or let the
+  domain lapse.
+- **The DNS** — who controls where the domain points. Currently whoever holds
+  the Wix account. This is the one that can silently break the site: someone
+  editing DNS in Wix for an unrelated reason can take the whole site offline,
+  and nothing in GitHub or Vercel will show why.
+
+The current record is an `A` record on the apex pointing to Vercel's
+`216.198.79.1`, plus a `CNAME` for `www`.
+
+Two acceptable end states:
+
+1. **Move DNS to Vercel.** Change the nameservers to Vercel's, and the domain is
+   managed in the same dashboard as the site. Fewest moving parts, and the option
+   to prefer if the club has no other use for the domain.
+2. **Leave DNS where it is, but under a club login.** Fine, as long as the
+   account is club-owned and someone records that DNS is the thing that lives
+   there.
+
+Either way, the registration should end up billed to a club-owned payment method
+with auto-renew on. An expired domain in a graduated student's personal account
+is the single most common way club websites die.
 
 ## The handoff package itself
 

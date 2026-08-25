@@ -1327,13 +1327,21 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
 }
 
 .lcg-tiles-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* --tile-cols is set per tab by LCGTilesToggle.tsx. */
+  grid-template-columns: repeat(var(--tile-cols, 4), minmax(0, 1fr));
   gap: 14px;
   margin-top: 40px;
   display: grid;
 }
 
 .lcg-tile {
+  /* Grid stretches every tile in a row to the tallest one, so a one-line label
+     next to a wrapped two-line label used to sit hard against the top edge.
+     Centring on both axes keeps the row reading as one band. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 62px;
   min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -1433,6 +1441,10 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   overflow: hidden;
   transition: box-shadow var(--transition), transform var(--transition);
   box-shadow: 0 4px 24px #cfddff26;
+}
+
+.lcg-client-cta-label {
+  margin: 0 20px;
 }
 
 /* Light sweep that crosses the bar on hover. */
@@ -1892,16 +1904,9 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   line-height: 1.75;
 }
 
-@media (max-width: 768px) {
-  .event-card-inner, .event-card-inner--flip {
-    direction: ltr;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .event-card-body {
-    padding: 28px 24px;
-  }
-}
+/* The event card's stacked layout used to live here at 768px. It now lives in
+   the touch/mobile section at the end of this file, at 900px, because iPads sit
+   between the two and the two-column form breaks before 768px is reached. */
 
 .modal-overlay {
   z-index: 9999;
@@ -2083,6 +2088,177 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
 
   .modal-title {
     font-size: 36px;
+  }
+}
+
+/* ===========================================================================
+   TOUCH BEHAVIOUR
+   ---------------------------------------------------------------------------
+   Three effects on this site are revealed by the cursor, which means they are
+   invisible on a phone. TouchSpotlight.tsx marks whatever is in the middle of
+   the screen with .touch-active as you scroll, and these rules give that class
+   the same meaning that :hover has on a desktop.
+
+   These live outside a media query on purpose: the trigger is the input device,
+   not the viewport width. A narrow desktop window still has a cursor and never
+   gets the class; a large tablet has no cursor and does.
+   =========================================================================== */
+
+/* Sponsors: the logo crossfades from white silhouette to full colour. Mirrors
+   what paintCard() in page.tsx does with the pointer. */
+.sponsor-card.touch-active {
+  border-color: rgba(207, 221, 255, .38);
+  background: rgba(33, 65, 98, .46);
+}
+
+/* !important because paintCard() in page.tsx drives these same two properties
+   as inline styles, and inline wins over a class. That code is guarded off on
+   touch so the two should never both be live, but this rule is the one that has
+   to hold if that guard is ever removed: without it the reveal fails silently
+   and only on phones. */
+.sponsor-card.touch-active .sponsor-logo-ghost {
+  opacity: .12 !important;
+}
+
+.sponsor-card.touch-active .sponsor-logo-full {
+  opacity: 1 !important;
+}
+
+/* How It Works steps. */
+.lcg-step.touch-active {
+  border-color: var(--border-accent);
+  background: rgba(33, 65, 98, .4);
+}
+
+/* LCG Advantage cards flip to their back face. */
+.lcg-why-card.touch-active .lcg-why-card-inner {
+  transform: rotateY(180deg);
+}
+
+.lcg-why-card.touch-active .lcg-why-card-front,
+.lcg-why-card.touch-active .lcg-why-card-back {
+  border-color: var(--border-accent);
+}
+
+/* ===========================================================================
+   PHONE AND TABLET LAYOUT
+   =========================================================================== */
+
+/* --- Events cards ---------------------------------------------------------
+   Stacks at 900px, not 768px. The desktop card is a fixed 460px-tall band with
+   a 440px image column, which leaves the body under 400px on an iPad — not
+   enough for the text, so overflow:hidden ate the Learn More button on four of
+   the five cards while everything still looked deliberate. 900px is the width
+   below which the two-column form stops working, regardless of whether the
+   device calls itself a tablet.
+
+   Stacked, the fixed height has to go: image and body were fighting over the
+   same 460px, which is what reduced the image to a sliver. The image then needs
+   a shape of its own, because next/image `fill` is absolutely positioned and
+   would collapse a content-height row to nothing. */
+@media (max-width: 900px) {
+  .event-card-inner,
+  .event-card-inner--flip {
+    direction: ltr;
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    grid-template-rows: auto auto;
+  }
+
+  .event-card-image {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+  }
+
+  /* EventCoverGraphic is a component rather than an <img>, so it needs telling
+     to fill the box the same way the photos do. */
+  .event-card-image > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  .event-card-body {
+    overflow: visible;
+    padding: 28px 24px;
+  }
+
+  /* Both variants put the button on the left once stacked; alternating sides
+     only made sense next to an image column. */
+  .event-card-inner:not(.event-card-inner--flip) .btn-sm,
+  .event-card-inner--flip .btn-sm {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  /* --- Sponsors -----------------------------------------------------------
+     Per-logo heights are set inline for the desktop wall and range from 128px
+     down to 50px. At phone size that reads as a ragged grid rather than a set,
+     so they are normalised to a single cap here. Inline styles can only be
+     overridden with !important. */
+  .sponsors-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  /* Mercer is the tenth logo, and ten into three columns leaves one stranded
+     on its own row. Hiding it here leaves an even 3x3 wall. */
+  .sponsor-card:nth-child(10) {
+    display: none;
+  }
+
+  .sponsor-card {
+    height: 92px;
+    padding: 12px;
+  }
+
+  .sponsor-card img {
+    height: auto !important;
+    max-height: 38px;
+    max-width: calc(100% - 16px);
+  }
+
+  /* --- LCG award banner ---------------------------------------------------
+     Trophy and copy are one flex row. Once the copy wraps to three lines the
+     icon centres against the whole block while the text reads as hanging left.
+     Stacking them centres both. */
+  .lcg-award-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 16px 22px;
+    line-height: 1.6;
+  }
+
+  /* --- LCG client CTA -----------------------------------------------------
+     52px of side padding plus two chevrons left the label almost no room, so
+     it wrapped and looked off-centre. */
+  .lcg-client-cta-btn {
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .lcg-client-cta-label {
+    margin: 0 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Two columns is the most that fits a label like "Go-to-Market Strategy"
+     without breaking it mid-word. */
+  .lcg-tiles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Contact department cards: at two columns an address like
+     khan0148@mylaurier.ca has nowhere to go but a second line, broken at an
+     arbitrary character. Full width lets each one sit on one line. */
+  .values-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .value-email {
+    font-size: 13px;
   }
 }
 

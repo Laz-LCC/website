@@ -42,7 +42,15 @@ export default function LCGTilesToggle() {
         </div>
 
         {/* Tiles — keyed to active so React remounts on switch, triggering CSS animation */}
-        <div key={current.key} className="lcg-tiles-grid lcg-tiles-animate" style={{ gridTemplateColumns: `repeat(${current.columns}, 1fr)` }}>
+        {/* Column count travels as a custom property rather than as an inline
+            grid-template-columns: an inline value cannot be overridden by a
+            media query, which locked this at three columns on a phone and
+            squeezed labels like "AI / Technology" into unreadable slivers. */}
+        <div
+          key={current.key}
+          className="lcg-tiles-grid lcg-tiles-animate"
+          style={{ '--tile-cols': current.columns } as React.CSSProperties}
+        >
           {current.tiles.map((tile, i) => (
             <div
               key={tile}

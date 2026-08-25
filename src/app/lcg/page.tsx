@@ -262,7 +262,7 @@ export default function LCG() {
       <section className="lcg-client-cta-section">
         <a href="/contact" className="lcg-client-cta-btn">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#081b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-          <span style={{ margin: '0 20px' }}>Work with an LCG team</span>
+          <span className="lcg-client-cta-label">Work with an LCG team</span>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#081b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
         </a>
       </section>
