@@ -3,6 +3,7 @@ import './globals.css'
 import SiteCursor from '@/components/SiteCursor'
 import TouchSpotlight from '@/components/TouchSpotlight'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const SITE_DESCRIPTION =
   'Laurier Consulting Club runs networking mixers, workshops, and case competitions ' +
@@ -71,7 +72,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             disables itself, this drives the same reveals from scroll position. */}
         <TouchSpotlight />
         {children}
+        {/* Page-view counts. Vercel serves this from a randomised path rather
+            than /_vercel/insights, so ad blockers do not recognise it. */}
         <Analytics />
+        {/* Core Web Vitals from real visitors. Separate product and separate
+            package from Analytics above: one counts visits, this one measures
+            how fast the pages actually felt. Both must also be switched on in
+            the Vercel dashboard or they collect nothing. */}
+        <SpeedInsights />
       </body>
     </html>
   )
