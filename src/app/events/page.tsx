@@ -214,7 +214,12 @@ export default function Events() {
                   alt="Mastercard Info Session & Networking Night"
                   fill
                   sizes="(max-width: 900px) 100vw, 50vw"
-                  style={{ objectFit: 'fill', transform: 'scaleX(1.4)', transformOrigin: 'center', filter: 'brightness(0.82)' }}
+                  /* Was objectFit:'fill' plus scaleX(1.4), which stretched the
+                     photo twice over: `fill` ignores the aspect ratio to match
+                     the box, and the transform widened it another 40% on top.
+                     `cover` crops instead of distorting, so people keep their
+                     proportions. */
+                  style={{ objectFit: 'cover', objectPosition: 'center', filter: 'brightness(0.82)' }}
                 />
               </div>
               <div className="event-card-body">
