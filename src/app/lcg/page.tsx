@@ -3,6 +3,7 @@ import Footer from '@/components/Footer'
 import PageAnimations from '@/components/PageAnimations'
 import HeroBackground from '@/components/HeroBackground'
 import LCGTilesToggle from '@/components/LCGTilesToggle'
+import { LCG_APPLICATIONS } from '@/data/announcements'
 
 export default function LCG() {
   return (
@@ -41,6 +42,41 @@ export default function LCG() {
         <i className="fa-solid fa-trophy"></i>
         <span>Best Specialty Program, 2 Years Running &nbsp;·&nbsp; Awarded across all Laurier business clubs</span>
       </div>
+
+
+      {/* ================================================
+          APPLICATIONS BANNER
+          High on the page so someone landing on /lcg during
+          a recruitment cycle sees it without scrolling far.
+          Disappears when LCG_APPLICATIONS is emptied.
+      ================================================= */}
+      {LCG_APPLICATIONS.length > 0 && (
+        <section className="lcg-apply-banner">
+          <div className="container">
+            <div className="lcg-apply-banner-inner">
+              <div className="lcg-apply-banner-copy">
+                <h2 className="lcg-apply-banner-title">Applications are live</h2>
+                <p className="lcg-apply-banner-sub">
+                  Associate and Consultant applications close {LCG_APPLICATIONS[0].closes}. Apply here.
+                </p>
+              </div>
+              <div className="lcg-apply-banner-buttons">
+                {LCG_APPLICATIONS.map(application => (
+                  <a
+                    key={application.key}
+                    href={application.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                  >
+                    {application.label} →
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
 
       {/* ================================================
@@ -275,6 +311,9 @@ export default function LCG() {
         <div className="container">
           <div className="section-label section-label--center">Get Involved</div>
           <h2 className="lcg-cta-title">Apply to<br /><span className="accent">LCG</span></h2>
+          {/* Unchanged and evergreen on purpose. The live application links live
+              in the applications banner near the top of this page instead, so
+              this section reads the same whether or not a cycle is open. */}
           <p className="lcg-cta-sub">
             LCG applications go out every term. To apply, visit the link in our Instagram bio and
             keep an eye out for recruitment announcements.

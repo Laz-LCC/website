@@ -121,10 +121,13 @@ export default function About() {
         <div className="container">
           <div className="section-label section-label--center">Get Involved</div>
           <h2 className="lcg-cta-title">Be Part of<br /><span className="accent">LCC</span></h2>
+          {/* Evergreen and never swaps. Open applications are listed on /apply,
+              which the seasonal Apply item in the navbar points at, so this
+              section reads the same whether or not a cycle is running. */}
           <p className="lcg-cta-sub">
-            Applications for LCC executive roles open over the summer. To apply, visit the link in
-            our Instagram bio. In the meantime, keep an eye on our Instagram for upcoming events
-            open to all Laurier students.
+            Applications for LCC executive roles open over the summer. To apply, visit the link
+            in our Instagram bio. In the meantime, keep an eye on our Instagram for upcoming
+            events open to all Laurier students.
           </p>
           <div className="lcg-cta-buttons">
             <a href="/contact" className="btn btn-primary">Contact Us →</a>

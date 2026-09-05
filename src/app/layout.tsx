@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 import SiteCursor from '@/components/SiteCursor'
 import TouchSpotlight from '@/components/TouchSpotlight'
+import AnnouncementBanner from '@/components/AnnouncementBanner'
+import { ANNOUNCEMENT_BANNER } from '@/data/announcements'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
@@ -64,7 +66,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin="anonymous"
         />
       </head>
-      <body>
+      {/* `has-banner` is what sets --banner-height, which the navbar, the mobile
+          menu, and the full-height heroes all offset themselves by. It has to
+          be driven by the same value the banner component checks, or the layout
+          reserves space for a strip that was never rendered. */}
+      <body className={ANNOUNCEMENT_BANNER ? 'has-banner' : undefined}>
+        {/* Time-sensitive strip above the navbar. Edit src/data/announcements.ts
+            to change or remove it. */}
+        <AnnouncementBanner />
         {/* Custom cursor, mounted site-wide. Self-disables on touch devices
             and for reduced-motion users. */}
         <SiteCursor />
