@@ -4,6 +4,7 @@ import Footer from '@/components/Footer'
 import PageAnimations from '@/components/PageAnimations'
 import HeroBackground from '@/components/HeroBackground'
 import EventCoverGraphic from '@/components/EventCoverGraphic'
+import UpcomingStrip from '@/components/UpcomingStrip'
 
 export default function Events() {
   return (
@@ -23,6 +24,11 @@ export default function Events() {
           </p>
         </div>
       </section>
+
+
+      {/* Events that have not happened yet. Renders nothing once
+          UPCOMING_EVENTS in src/data/announcements.ts is emptied. */}
+      <UpcomingStrip />
 
 
       {/* ================================================

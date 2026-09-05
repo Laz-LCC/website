@@ -1,3 +1,8 @@
+import { LCG_APPLICATIONS, CLUB_APPLICATIONS } from '@/data/announcements'
+
+/** Mirrors the same check in Navbar.tsx. */
+const hasOpenApplications = LCG_APPLICATIONS.length + CLUB_APPLICATIONS.length > 0
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -28,6 +33,10 @@ export default function Footer() {
               <li><a href="/about">About Us</a></li>
               <li><a href="/lcg">LCG</a></li>
               <li><a href="/contact">Contact</a></li>
+              {/* Seasonal, matching the Apply item in the navbar: shown only
+                  while something is actually open. The /apply page itself stays
+                  up year-round. */}
+              {hasOpenApplications && <li><a href="/apply">Apply</a></li>}
             </ul>
           </div>
 

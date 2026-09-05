@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { LCG_APPLICATIONS, CLUB_APPLICATIONS } from '@/data/announcements'
 
 const links = [
   { href: '/',        label: 'Home',     key: 'home'    },
@@ -9,6 +10,18 @@ const links = [
   { href: '/lcg',     label: 'LCG',      key: 'lcg'     },
   { href: '/contact', label: 'Contact',  key: 'contact' },
 ]
+
+/**
+ * The Apply link is seasonal: it appears only while something is actually open,
+ * and disappears when src/data/announcements.ts is emptied. This is the entry
+ * point to /apply, which is why the announcement strip above the navbar does not
+ * need a button of its own.
+ *
+ * The page at /apply still exists off-season and says nothing is open. Only the
+ * nav item goes away, because a permanent "Apply" tab that leads to "nothing is
+ * open" is worse than no tab.
+ */
+const hasOpenApplications = LCG_APPLICATIONS.length + CLUB_APPLICATIONS.length > 0
 
 export default function Navbar({ active }: { active: string }) {
   const [scrolled, setScrolled] = useState(false)
@@ -48,6 +61,17 @@ export default function Navbar({ active }: { active: string }) {
               </a>
             </li>
           ))}
+          {hasOpenApplications && (
+            <li>
+              <a
+                href="/apply"
+                className={`nav-link nav-link--apply${active === 'apply' ? ' active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                Apply
+              </a>
+            </li>
+          )}
         </ul>
 
         <button

@@ -21,6 +21,11 @@
   --font-body: "Poppins", sans-serif;
   --font-serif: "Playfair Display", serif;
   --nav-height: 80px;
+  /* Height of the announcement strip above the navbar. 0 by default: the site
+     has no announcement most of the year, and every rule that offsets itself by
+     this value then resolves to exactly what it was before the strip existed.
+     `body.has-banner` raises it. Do not hardcode 46px anywhere else. */
+  --banner-height: 0px;
   /* Fluid so wide monitors are not left with a narrow column of content in the
      middle. Capped rather than uncapped: past roughly this width, body text
      line lengths get too long to read comfortably. Raise the cap if you want
@@ -109,6 +114,55 @@ body {
   line-height: 1.6;
   position: relative;
   overflow-x: hidden;
+}
+
+/* Set by layout.tsx only while there is an announcement to show. The padding
+   pushes the whole document below the fixed strip; the variable is what the
+   navbar, the mobile menu, and the 100vh heroes read to stay in register with
+   it. Both have to move together, which is why they live in one rule. */
+body.has-banner {
+  --banner-height: 46px;
+  padding-top: var(--banner-height);
+}
+
+/* =================================================
+   ANNOUNCEMENT BANNER
+   Pale strip above the navbar. Inverted against the
+   navy site on purpose: an announcement that blends
+   into the header is an announcement nobody reads.
+================================================= */
+.announcement-banner {
+  z-index: 1001;
+  height: var(--banner-height);
+  color: var(--navy-darkest);
+  background: linear-gradient(90deg, var(--blue-soft) 0%, var(--blue-pale) 50%, var(--blue-soft) 100%);
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-decoration: none;
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.announcement-banner-icon {
+  color: var(--navy-mid);
+  flex: none;
+  font-size: 11px;
+}
+
+.announcement-banner-text {
+  text-align: center;
+}
+
+.announcement-banner-headline {
+  font-weight: 700;
 }
 
 img {
@@ -302,7 +356,9 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   height: var(--nav-height);
   transition: background var(--transition), box-shadow var(--transition);
   position: fixed;
-  top: 0;
+  /* Sits below the announcement strip, not under it. Resolves to 0 when there
+     is no strip. */
+  top: var(--banner-height);
   left: 0;
   right: 0;
 }
@@ -356,6 +412,19 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   background: #cfddff12;
 }
 
+/* The seasonal Apply link. Filled rather than outlined so it separates from the
+   five permanent links without needing a divider, and because it is the one nav
+   item with a deadline attached to it. */
+.nav-link--apply {
+  color: var(--navy-darkest);
+  background: var(--blue-light);
+}
+
+.nav-link--apply:hover, .nav-link--apply.active {
+  color: var(--navy-darkest);
+  background: var(--blue-pale);
+}
+
 .nav-toggle {
   cursor: pointer;
   background: none;
@@ -392,7 +461,9 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
 .hero {
   background: radial-gradient(at 18% 65%, #1e3d5e 0%, #0b2337 42%, #081b2b 75%);
   align-items: center;
-  height: 100vh;
+  /* `body.has-banner` adds padding-top, so a flat 100vh here would push the
+     first screen taller than the window by exactly the strip's height. */
+  height: calc(100vh - var(--banner-height));
   min-height: 560px;
   display: flex;
   position: relative;
@@ -983,7 +1054,7 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
 .page-hero {
   background: radial-gradient(at 20% 60%, #1e3d5e 0%, #0b2337 45%, #081b2b 80%);
   align-items: center;
-  height: 100vh;
+  height: calc(100vh - var(--banner-height));
   min-height: 560px;
   display: flex;
   position: relative;
@@ -1131,6 +1202,59 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   display: flex;
 }
 
+/* =================================================
+   LCG APPLICATIONS BANNER
+   Sits under the award banner. Same accent-rail
+   treatment as the /events upcoming strip, so the
+   two "something is open" surfaces read as a pair.
+================================================= */
+/* Padded on BOTH sides. With `0` at the bottom the card's lower edge landed
+   exactly on the seam where this section's --bg-primary meets the hype
+   section's --bg-secondary, so the card appeared to bleed into "What is LCG?"
+   rather than sit in its own band. */
+.lcg-apply-banner {
+  padding: var(--section-pad-tight) 0;
+  background: var(--bg-primary);
+}
+
+.lcg-apply-banner-inner {
+  border-left: 3px solid var(--text-accent);
+  background: var(--bg-card);
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 32px;
+  display: flex;
+}
+
+.lcg-apply-banner-copy {
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  display: flex;
+}
+
+.lcg-apply-banner-title {
+  font-family: var(--font-display);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  font-size: clamp(21px, 2.2vw, 28px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.lcg-apply-banner-sub {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.lcg-apply-banner-buttons {
+  flex-wrap: wrap;
+  gap: 14px;
+  display: flex;
+}
+
 .lcg-award-banner i {
   font-size: 13px;
 }
@@ -1138,7 +1262,7 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
 .lcg-page-hero {
   background: radial-gradient(at 15% 55%, #214162 0%, #0b2337 38%, #081b2b 70%);
   align-items: center;
-  height: 100vh;
+  height: calc(100vh - var(--banner-height));
   min-height: 560px;
   display: flex;
   position: relative;
@@ -1613,8 +1737,35 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
     display: flex;
   }
 
+  /* The message wraps to two lines on a phone, so the strip has to be tall
+     enough to hold them or the second line is clipped by the navbar. */
+  body.has-banner {
+    --banner-height: 58px;
+  }
+
+  .announcement-banner {
+    gap: 9px;
+    padding: 0 18px;
+    font-size: 12px;
+  }
+
+  /* Dropped on phones only. The message wraps to two lines here, and a flex item
+     centres against the whole two-line block instead of the first line, which
+     leaves the star floating in the gap between them. It stays on desktop,
+     where the message is one line and the alignment is correct.
+
+     Written as a descendant selector deliberately. Font Awesome's `.fa-solid`
+     sets `display` at the same specificity as a lone `.announcement-banner-icon`
+     and its stylesheet lands after ours, so the single-class version loses and
+     the star stays visible. Two classes beat it. */
+  .announcement-banner .announcement-banner-icon {
+    display: none;
+  }
+
   .nav-links {
-    top: var(--nav-height);
+    /* The open mobile menu hangs off the bottom of the navbar, which is itself
+       pushed down by the strip. */
+    top: calc(var(--banner-height) + var(--nav-height));
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border-subtle);
@@ -1654,6 +1805,18 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   .nav-link.active {
     border-left-color: var(--blue-light);
     color: var(--text-primary);
+  }
+
+  /* The desktop Apply link is a filled pill, but the mobile menu suppresses all
+     nav backgrounds (`background: none !important` above) and signals state with
+     the left border instead. So rather than fight that with another !important,
+     Apply is distinguished here the way this menu already distinguishes things:
+     accent text and a standing left border. Must stay AFTER the rules above so
+     it wins on order; `.nav-link.active` is still more specific, so the active
+     state on /apply continues to take over. */
+  .nav-link--apply {
+    border-left-color: var(--border-accent);
+    color: var(--text-accent);
   }
 
   .featured-body, .lcg-teaser-grid, .about-mission-grid, .lcg-page-hero-inner, .lcg-hype-grid, .about-club-grid, .contact-page-grid {
@@ -1736,6 +1899,206 @@ body:has(.site-cursor-dot) :is(input, textarea, select, [contenteditable]) {
   .about-club-stats, .lcg-tiles-grid, .lcg-clients-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* =================================================
+   APPLY PAGE (/apply)
+================================================= */
+.apply-section {
+  padding: var(--section-pad) 0;
+  background: var(--bg-primary);
+}
+
+.apply-group + .apply-group {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--section-pad);
+  padding-top: var(--section-pad);
+}
+
+.apply-group-head {
+  max-width: 720px;
+  margin-bottom: var(--gap-title-grid);
+}
+
+.apply-group-title {
+  font-family: var(--font-display);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.apply-group-blurb {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.apply-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  display: grid;
+}
+
+/* Column layout with the button pushed to the bottom by margin-top:auto on the
+   button itself, so cards in a row keep their Apply buttons on one line even
+   when the descriptions are different lengths. */
+/* max-width matters when a group has only ONE role in it: auto-fit would
+   otherwise stretch that single card across the full container, giving it a
+   1250px-wide Apply button. The cap is above the width two cards get in a row,
+   so it never affects the multi-card case. */
+.apply-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  flex-direction: column;
+  gap: 24px;
+  max-width: 620px;
+  padding: 30px;
+  transition: border-color var(--transition), background var(--transition);
+  display: flex;
+}
+
+.apply-card:hover {
+  border-color: var(--border-accent);
+  background: var(--bg-card-hover);
+}
+
+/* flex:1 here plus margin-top:auto on the facts block below lines the "Closes"
+   rows up across cards in a row, even when one description wraps to three lines
+   and its neighbour wraps to two. */
+.apply-card-body {
+  flex-direction: column;
+  flex: 1;
+  gap: 16px;
+  display: flex;
+}
+
+.apply-card-role {
+  font-family: var(--font-display);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  font-size: clamp(20px, 2vw, 25px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.apply-card-desc {
+  color: var(--text-secondary);
+  font-size: 14.5px;
+}
+
+.apply-card-facts {
+  border-top: 1px solid var(--border-subtle);
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 18px;
+  display: flex;
+}
+
+.apply-fact-label {
+  color: var(--text-muted);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.apply-fact-value {
+  color: var(--text-accent);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.apply-card .btn {
+  margin-top: auto;
+  text-align: center;
+}
+
+/* Off-season state. Centred because it is the only thing on the page. */
+.apply-closed {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.apply-closed-title {
+  font-family: var(--font-display);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.apply-closed-text {
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  font-size: 15px;
+}
+
+.apply-closed-buttons {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  display: flex;
+}
+
+/* =================================================
+   UPCOMING STRIP (/events, above the cards)
+   Compact on purpose. The cards below are a record
+   of events that already ran; this is a notice, and
+   it should not compete with them visually.
+================================================= */
+.upcoming-section {
+  padding: var(--section-pad-tight) 0 0;
+  background: var(--bg-primary);
+}
+
+.upcoming-strip {
+  /* The accent rail is the whole visual treatment. A full card border here made
+     it read as another event card one size down. */
+  border-left: 3px solid var(--text-accent);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  background: var(--bg-card);
+  padding: 26px 30px;
+}
+
+.upcoming-strip-label {
+  color: var(--text-accent);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.upcoming-event {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  display: flex;
+}
+
+.upcoming-event-info {
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  display: flex;
+}
+
+.upcoming-event-title {
+  font-family: var(--font-display);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 400;
+  line-height: 1.1;
 }
 
 .events-section {

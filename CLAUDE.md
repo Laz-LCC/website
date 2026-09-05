@@ -265,6 +265,104 @@ one links to /lcg.)
 
 ---
 
+## Seasonal Announcements (added 2026-09-05)
+
+Recruitment and upcoming events are **data, not markup**. Everything time-sensitive
+reads from one file: `src/data/announcements.ts`. Nothing else needs editing when a
+cycle opens or closes.
+
+| Export | Drives |
+|---|---|
+| `ANNOUNCEMENT_BANNER` | The pale strip above the navbar, on every page |
+| `LCG_APPLICATIONS` | The LCG role cards on `/apply`, **and** the "Applications are live" banner on `/lcg` |
+| `CLUB_APPLICATIONS` | The LCC role cards on `/apply` |
+| both arrays together | The seasonal **Apply** item in the navbar and footer |
+| `UPCOMING_EVENTS` | The "Upcoming Events" strip above the cards on `/events` |
+
+### `/apply` is the only place applications are listed
+
+This was consolidated 2026-09-05 after three rounds of review. Do not scatter
+application links back across the site. Specifically:
+
+- `/events` shows **events only**. It briefly carried a First Year Rep row; removed.
+- `/about` is **evergreen** and has no application button. It briefly had one; removed.
+- The `/lcg` bottom CTA is **evergreen** and never swaps.
+- The `/lcg` applications banner is the one deliberate exception: someone reading
+  about the Associate and Consultant roles on that page should be able to apply
+  without navigating away.
+
+**To turn everything off** when the deadlines pass: set `ANNOUNCEMENT_BANNER` to
+`null` and all three arrays to `[]`. Verified 2026-09-05 across all six routes: banner
+gone, navbar back at the top of the window, Apply item gone from navbar and footer,
+`/lcg` applications banner and `/events` strip not rendered.
+
+**`/apply` stays live year-round** and shows a "Nothing is open right now" state
+pointing at Instagram and Contact. Only the nav and footer items disappear. This is
+deliberate: that URL goes in the Instagram bio and on printed material, so it must
+not 404 during the eleven months nothing is open.
+
+**To open a new cycle**: add entries to the arrays and write a new banner message.
+No CSS or component changes needed.
+
+### How the banner is wired
+- It is **static text, not a link, and carries no button** (decided 2026-09-05). It is
+  an announcement, and the pages it refers to are one row below it in the navbar. Do
+  not add a CTA back without asking.
+- The icon is Font Awesome's **solid five-point star** (`fa-solid fa-star`), the same
+  mark already used on the event award badge. Never swap it for the four-point
+  sparkle, which reads as an AI badge now.
+- **The star is desktop-only.** Under 768px the message wraps to two lines, and a flex
+  item centres against the whole block rather than the first line, leaving the star
+  floating in the gap. It is hidden there by
+  `.announcement-banner .announcement-banner-icon { display: none }` — written with
+  **two classes on purpose**. Font Awesome's `.fa-solid` sets `display` at the same
+  specificity as a lone `.announcement-banner-icon`, and its stylesheet lands after
+  ours, so the single-class version silently loses and the star stays visible.
+- `--banner-height` is `0px` in `:root` and `46px` (58px under 768px) on
+  `body.has-banner`. Every offset is written as `var(--banner-height)` or a `calc()`
+  using it, so with no banner they all resolve to their pre-banner values.
+- `layout.tsx` puts `has-banner` on `<body>` only when `ANNOUNCEMENT_BANNER` is
+  non-null. **The class and the component must stay driven by the same value** or the
+  navbar floats 46px down with nothing above it.
+- The three full-height heroes are `calc(100vh - var(--banner-height))` because
+  `body.has-banner` adds matching `padding-top`. A flat `100vh` overflows the window
+  by exactly the strip's height.
+- On phones the strip is 58px, because the message wraps to two lines at that width.
+
+### Current cycle (Fall 2026)
+| Item | Closes / Date |
+|---|---|
+| LCG Associate | September 13, 11:59 PM |
+| LCG Consultant | September 13, 11:59 PM |
+| First Year Rep | September 18 |
+| First Year Networking Mixer | September 16, 6:30-8:30 PM, Lazaridis Atrium & LH1009, free to attend |
+
+Banner copy is "We're hiring!" + "Fall 2026 LCG positions and First Year
+Representative applications are open."
+
+`.lcg-apply-banner` must keep padding on **both** sides. With `0` at the bottom the
+card's lower edge landed exactly on the seam where its `--bg-primary` meets the hype
+section's `--bg-secondary`, and the card appeared to bleed into "What is LCG?".
+
+### The /apply page
+- `src/app/apply/page.tsx`. Roles are grouped by `program` (`'LCG'` / `'LCC'`), so a
+  first year can tell club exec roles from LCG engagement roles at a glance.
+- It carries its own `metadata` export, which the other pages do not. This is the URL
+  most likely to be pasted somewhere that renders a link preview, so a generic card
+  on a link that says "apply here" would be a wasted impression.
+- `.apply-card` has a `max-width` because `auto-fit` stretches a lone card across the
+  full container, giving a single role a 1250px-wide Apply button.
+- Role descriptions do **not** restate the role name; the card title above already
+  says it.
+- The **Apply nav item is desktop-filled but border-accented on mobile.** The mobile
+  menu sets `background: none !important` on all nav links by design and signals
+  state with the left border, so `.nav-link--apply` matches that pattern there rather
+  than fighting it with another `!important`.
+
+The `pre-recruitment-2026` git tag marks the last commit before any of this existed.
+
+---
+
 ## Repo & Deploy State
 
 - **Club repo**: `https://github.com/Laz-LCC/website` — PUBLIC, default branch `main`,
