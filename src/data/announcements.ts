@@ -72,67 +72,21 @@ export type Banner = {
 }
 
 // ---------------------------------------------------------------------------
-// ACTIVE — Fall 2026 recruitment
+// OFF SEASON — nothing is open.
+//
+// The Fall 2026 cycle closed September 18, 2026 and was taken down on
+// September 29, 2026. Its role copy, form links and deadlines are in the
+// commit that removed them, and the cycle is summarised in CLAUDE.md, so
+// next year's cycle can start from what actually ran rather than from blank.
 // ---------------------------------------------------------------------------
 
-export const ANNOUNCEMENT_BANNER: Banner | null = {
-  headline: "We're hiring!",
-  detail: 'Fall 2026 LCG positions and First Year Representative applications are open.',
-}
+export const ANNOUNCEMENT_BANNER: Banner | null = null
 
 /** LCG engagement roles. Shown on /apply and in the /lcg applications banner. */
-export const LCG_APPLICATIONS: Application[] = [
-  {
-    key: 'associate',
-    label: 'Associate Application',
-    role: 'Associate',
-    program: 'LCG',
-    href: 'https://docs.google.com/forms/d/e/1FAIpQLSfyS0aAVSoeOaB8tH5TGHpYy3Ui2IvnHZ-gHk4OlBiZ4VW1PQ/viewform',
-    closes: 'September 13 at 11:59 PM',
-    // Descriptions do not restate the role name: the card title directly above
-    // already says it.
-    description:
-      'Leads the research behind an engagement and builds the recommendations that go into the team\'s final deliverable.',
-    eligibility: 'Open to first and second year students.',
-  },
-  {
-    key: 'consultant',
-    label: 'Consultant Application',
-    role: 'Consultant',
-    program: 'LCG',
-    href: 'https://docs.google.com/forms/d/e/1FAIpQLSeWUpKJGN5BeQj7HVAOUxQZQc_5AJgN00W4R-Rm3TVKw-kctg/viewform',
-    closes: 'September 13 at 11:59 PM',
-    description:
-      'Drives the client-facing presentations and works directly with the company the team is paired with.',
-    eligibility: 'Open to second year students and above.',
-  },
-]
+export const LCG_APPLICATIONS: Application[] = []
 
 /** Club executive roles. Shown on /apply only. */
-export const CLUB_APPLICATIONS: Application[] = [
-  {
-    key: 'first-year-rep',
-    label: 'First Year Rep Application',
-    role: 'First Year Representative',
-    program: 'LCC',
-    href: 'https://docs.google.com/forms/d/e/1FAIpQLSc_Q-3aY0dxS4POjTNE7K7I8NxuYWlhEjsoEk4usNFOB43p5g/viewform',
-    closes: 'September 18',
-    description:
-      'A rotational role across the club\'s portfolios, including Corporate, Events, Finance, and LCG, helping run the events and engagements each one is responsible for.',
-    eligibility: 'Open to first year students only.',
-  },
-]
+export const CLUB_APPLICATIONS: Application[] = []
 
 /** Shown on /events as a strip above the past-event cards. */
-export const UPCOMING_EVENTS: UpcomingEvent[] = [
-  {
-    key: 'first-year-mixer',
-    title: 'First Year Networking Mixer',
-    date: 'September 16, 2026',
-    time: '6:30 PM - 8:30 PM',
-    location: 'Lazaridis Atrium & LH1009',
-    cost: 'Free to attend',
-    signupHref:
-      'https://docs.google.com/forms/d/e/1FAIpQLSfWvzL1cZdXQQUkTAetCs_EM2GPM4l7jczIK2xXxryrUQ2X7w/viewform',
-  },
-]
+export const UPCOMING_EVENTS: UpcomingEvent[] = []

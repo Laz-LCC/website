@@ -329,16 +329,28 @@ No CSS or component changes needed.
   by exactly the strip's height.
 - On phones the strip is 58px, because the message wraps to two lines at that width.
 
-### Current cycle (Fall 2026)
-| Item | Closes / Date |
+### Current cycle: none. Off season since 2026-09-29.
+
+`announcements.ts` is in its off state: banner `null`, all three arrays `[]`. The
+banner, the Apply nav and footer items, the `/lcg` applications banner and the
+`/events` upcoming strip are all gone. `/apply` is still live and shows its
+"nothing is open" state.
+
+### Last cycle that ran (Fall 2026, closed and taken down 2026-09-29)
+| Item | Closed / Date |
 |---|---|
-| LCG Associate | September 13, 11:59 PM |
-| LCG Consultant | September 13, 11:59 PM |
-| First Year Rep | September 18 |
+| LCG Associate | September 13, 11:59 PM — open to first and second year |
+| LCG Consultant | September 13, 11:59 PM — open to second year and above |
+| First Year Rep | September 18 — first year only, rotational across portfolios |
 | First Year Networking Mixer | September 16, 6:30-8:30 PM, Lazaridis Atrium & LH1009, free to attend |
 
-Banner copy is "We're hiring!" + "Fall 2026 LCG positions and First Year
-Representative applications are open."
+Banner copy was "We're hiring!" + "Fall 2026 LCG positions and First Year
+Representative applications are open." The four Google Form links are in the commit
+that removed them; next year needs fresh forms anyway.
+
+The mixer has happened and is no longer listed anywhere. If it should appear as a
+past-event card on `/events`, that is a separate edit to `events/page.tsx` and needs
+a photo and copy.
 
 `.lcg-apply-banner` must keep padding on **both** sides. With `0` at the bottom the
 card's lower edge landed exactly on the seam where its `--bg-primary` meets the hype
